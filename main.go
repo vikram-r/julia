@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 	"os"
-	"runtime/debug"
 	"os/exec"
-	"strings"
+	"runtime/debug"
 	"strconv"
+	"strings"
 )
 
 func main() {
@@ -23,7 +23,29 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(w, ",", h)
+	cX, cY := -0.7, 0.27015
+	drawJulia(float64(w), float64(h), cX, cY, 255, 1.0, 0, 0)
+}
+
+func drawJulia(w float64, h float64, cX float64, cY float64, max int, zoom float64, moveX float64, moveY float64) {
+	for y := 0.0; y < h; y++ {
+		for x := 0.0; x < w; x++ {
+			zx := 1.5 * (x - w/2) / (0.5 * zoom * w) + moveX
+			zy := 1.0 * (y - h/2) / (0.5 * zoom * h) + moveY
+			done := func() bool {
+				return (zx*zx + zy*zy) >= 4
+			}
+			for i := 0; i < max && !done(); i++ {
+				tmp := zx*zx - zy*zy + cX
+				zy, zx = 2.0*zx*zy+cY, tmp
+			}
+			if !done() {
+				fmt.Print("*")
+			} else {
+				fmt.Print(" ")
+			}
+		}
+	}
 }
 
 func terminalDimensions() (width, height int, e error) {
