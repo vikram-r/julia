@@ -7,6 +7,7 @@ import (
 	"runtime/debug"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func main() {
@@ -24,10 +25,21 @@ func main() {
 		panic(err)
 	}
 	cX, cY := -0.7, 0.27015
-	drawJulia(float64(w), float64(h), cX, cY, 255, 1.0, 0, 0)
+
+	waitTime := time.Duration(500) * time.Millisecond
+
+	z := 1.0
+	for {
+		result := julia(float64(w), float64(h), cX, cY, 255, z, 0, 0)
+		fmt.Print(result)
+		z += 1
+		time.Sleep(waitTime)
+	}
 }
 
-func drawJulia(w float64, h float64, cX float64, cY float64, max int, zoom float64, moveX float64, moveY float64) {
+func julia(w float64, h float64, cX float64, cY float64, max int, zoom float64, moveX float64, moveY float64) string {
+	// TODO canvas is to improve readability, and can be removed if it affects performance
+	canvas := makeCanvas(int(w), int(h))
 	for y := 0.0; y < h; y++ {
 		for x := 0.0; x < w; x++ {
 			zx := 1.5 * (x - w/2) / (0.5 * zoom * w) + moveX
@@ -40,12 +52,32 @@ func drawJulia(w float64, h float64, cX float64, cY float64, max int, zoom float
 				zy, zx = 2.0*zx*zy+cY, tmp
 			}
 			if !done() {
-				fmt.Print("*")
+				canvas[int(y)][int(x)] = "*"
 			} else {
-				fmt.Print(" ")
+				canvas[int(y)][int(x)] = " "
 			}
 		}
 	}
+	return canvasToString(canvas)
+}
+
+func canvasToString(canvas [][]string) string {
+	str := ""
+	for y := range canvas {
+		for x := range canvas[y] {
+			str += canvas[y][x]
+		}
+		str += "\n"
+	}
+	return str
+}
+
+func makeCanvas(w int, h int) [][]string {
+	canvas := make([][]string, h)
+	for i := range canvas {
+		canvas[i] = make([]string, w)
+	}
+	return canvas
 }
 
 func terminalDimensions() (width, height int, e error) {
