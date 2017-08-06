@@ -26,13 +26,13 @@ func main() {
 	}
 	cX, cY := -0.7, 0.27015
 
-	waitTime := time.Duration(500) * time.Millisecond
+	waitTime := time.Duration(100) * time.Millisecond
 
 	z := 1.0
 	for {
 		result := julia(float64(w), float64(h), cX, cY, 255, z, 0, 0)
 		fmt.Print(result)
-		z += 1
+		z += .01
 		time.Sleep(waitTime)
 	}
 }
