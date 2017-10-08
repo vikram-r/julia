@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"bytes"
 )
 
 func main() {
@@ -62,14 +63,14 @@ func julia(w float64, h float64, cX float64, cY float64, max int, zoom float64, 
 }
 
 func canvasToString(canvas [][]string) string {
-	str := ""
+	var buf bytes.Buffer
 	for y := range canvas {
 		for x := range canvas[y] {
-			str += canvas[y][x]
+			buf.WriteString(canvas[y][x])
 		}
-		str += "\n"
+		buf.WriteByte('\n')
 	}
-	return str
+	return buf.String()
 }
 
 func makeCanvas(w int, h int) [][]string {
